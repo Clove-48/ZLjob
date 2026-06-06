@@ -7,7 +7,14 @@ const avatarCache = new Map()
 
 export async function gameRoutes(app) {
   app.post('/start', async (request, reply) => {
+    console.log('[POST /start] body:', JSON.stringify(request.body))
     const { role, equippedTalents } = request.body || {}
+
+    if (!role) {
+      console.error('[POST /start] Missing role field')
+      return reply.status(400).send({ error: 'Missing required field: role' })
+    }
+
     const gameState = await gameService.createGame(role, equippedTalents || [])
 
     // 预生成面试官头像 - 使用角色的 appearance 描述
